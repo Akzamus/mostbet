@@ -6,8 +6,6 @@ import json
 load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-APP_HOST = os.getenv('APP_HOST')
-APP_PORT = os.getenv('APP_PORT')
 WEB_HOOK_URL = os.getenv('WEB_HOOK_URL')
 MAIN_ADMIN_ID = os.getenv('MAIN_ADMIN_ID')
 

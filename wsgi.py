@@ -1,4 +1,4 @@
-from settings.settings import WEB_HOOK_URL, APP_HOST, APP_PORT
+from settings.settings import WEB_HOOK_URL
 from telegram_bot import bot
 from app import app
 
@@ -9,4 +9,4 @@ if __name__ == '__main__':
     time.sleep(0.1)
 
     bot.set_webhook(url=WEB_HOOK_URL)
-    app.run(host=APP_HOST, port=APP_PORT)
+    app.run()
