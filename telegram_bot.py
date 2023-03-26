@@ -1,7 +1,9 @@
 from settings.settings import BOT_TOKEN, admin_ids, MAIN_ADMIN_ID
+import threading
 import telebot
 
 bot = telebot.TeleBot(token=BOT_TOKEN)
+lock = threading.Lock()
 
 
 def send_notification_to_admins(text):
@@ -52,11 +54,12 @@ def add_admin(message):
         elif not words[1].isdigit():
             response_text = 'The user id consists only of digits'
         elif check_user_existence(int(words[1])):
-            if int(words[1]) in admin_ids:
-                response_text = 'The user is already an admin'
-            else:
-                admin_ids.append(int(words[1]))
-                response_text = 'User added to admins'
+            with lock:
+                if int(words[1]) in admin_ids:
+                    response_text = 'The user is already an admin'
+                else:
+                    admin_ids.append(int(words[1]))
+                    response_text = 'User added to admins'
         else:
             response_text = 'The user with this id does not exists or ' \
                             'the chat with the bot has not started'
@@ -75,11 +78,12 @@ def delete_admin(message):
         elif not words[1].isdigit():
             response_text = 'The user id consists only of digits'
         elif int(words[1]) in admin_ids:
-            if int(words[1]) == int(MAIN_ADMIN_ID):
-                response_text = 'You cannot delete yourself from the list'
-            else:
-                admin_ids.remove(int(words[1]))
-                response_text = 'Admin removed from the list'
+            with lock:
+                if int(words[1]) == int(MAIN_ADMIN_ID):
+                    response_text = 'You cannot delete yourself from the list'
+                else:
+                    admin_ids.remove(int(words[1]))
+                    response_text = 'Admin removed from the list'
         else:
             response_text = 'The admin with this id was not found in the list'
     bot.send_message(user_id, response_text)

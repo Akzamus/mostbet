@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-import atexit
+import signal
 import json
 
 load_dotenv()
@@ -19,4 +19,14 @@ except Exception:
     admin_ids.append(int(MAIN_ADMIN_ID))
 
 
-atexit.register(lambda: json.dump(admin_ids, open(f'./settings/{admin_ids_file}', 'w')))
+def save_admin_ids():
+    with open(admin_ids_file, 'w') as file:
+        json.dump(admin_ids, file)
+
+
+def handle_exit(signum, frame):
+    save_admin_ids()
+    exit(0)
+
+
+signal.signal(signal.SIGTERM, handle_exit)
