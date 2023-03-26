@@ -1,9 +1,7 @@
-from settings.settings import BOT_TOKEN, admin_ids, MAIN_ADMIN_ID
-import threading
+from settings.settings import BOT_TOKEN, admin_ids, MAIN_ADMIN_ID, lock
 import telebot
 
 bot = telebot.TeleBot(token=BOT_TOKEN)
-lock = threading.Lock()
 
 
 def send_notification_to_admins(text):
@@ -70,7 +68,7 @@ def add_admin(message):
 def delete_admin(message):
     user_id = message.from_user.id
     response_text = 'You are not a main admin'
-    if user_id == int(MAIN_ADMIN_ID):
+    if user_id == MAIN_ADMIN_ID:
         words = message.text.split()
         if len(words) != 2:
             response_text = 'Incorrect input, correct input format:\n' \
@@ -79,7 +77,7 @@ def delete_admin(message):
             response_text = 'The user id consists only of digits'
         elif int(words[1]) in admin_ids:
             with lock:
-                if int(words[1]) == int(MAIN_ADMIN_ID):
+                if int(words[1]) == MAIN_ADMIN_ID:
                     response_text = 'You cannot delete yourself from the list'
                 else:
                     admin_ids.remove(int(words[1]))
