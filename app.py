@@ -1,10 +1,8 @@
-from settings.settings import admin_ids, WEB_HOOK_URL, APP_HOST, APP_PORT
 from flask import Flask, request, make_response
 from telegram_bot import bot, send_notification_to_admins
 
 import telebot
 import flask
-import time
 
 app = Flask(__name__)
 
@@ -67,10 +65,3 @@ def webhook():
 
     return make_response('OK', 200)
 
-
-if __name__ == '__main__':
-    bot.remove_webhook()
-    time.sleep(0.1)
-
-    bot.set_webhook(url=WEB_HOOK_URL)
-    app.run(host=APP_HOST, port=APP_PORT)
