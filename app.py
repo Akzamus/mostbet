@@ -1,41 +1,54 @@
-from settings import BOT_TOKEN, USER_ID, WEB_HOOK_URL, APP_HOST, APP_PORT
+from settings.settings import admin_ids, WEB_HOOK_URL, APP_HOST, APP_PORT
 from flask import Flask, request, make_response
+from telegram_bot import bot, send_notification_to_admins
 
-import atexit
-import os
 import telebot
 import flask
 import time
 
-
-chat_id = 0
-chat_id_file = 'chat_id.txt'
-
-bot = telebot.TeleBot(token=BOT_TOKEN)
 app = Flask(__name__)
 
 
-def save_chat_id():
-    with open(chat_id_file, 'w') as file:
-        file.write(str(chat_id))
+def check_user_existence(user_id):
+    user_exists = True
+    try:
+        bot.send_message(user_id, 'Now you are an admin')
+    except telebot.apihelper.ApiException:
+        user_exists = False
+    return user_exists
 
 
-if os.path.isfile(chat_id_file):
-    with open(chat_id_file, 'r') as f:
-        chat_id = int(f.read().strip())
-else:
-    chat_id = 0
-atexit.register(save_chat_id)
+@app.route('/notify/telegram/after_registration', methods=['GET'])
+def send_notification_after_registration_use_telegram_bot():
+    user_id = request.args.get('user_id', '', str)
+    if user_id == '':
+        return make_response('Bad Request', 400)
+    response_text = f'The user has registered, id: {user_id}'
+
+    try:
+        send_notification_to_admins(response_text)
+    except telebot.apihelper.ApiException:
+        return make_response('Error: failed to send notification to admin', 400)
+
+    return make_response('OK', 200)
 
 
-@app.route('/notify/telegram/', methods=['GET'])
-def handle_get_request():
-    if chat_id == 0:
-        return make_response('Error: chat_id not set', 400)
+@app.route('/notify/telegram/after_first_deposit', methods=['GET'])
+def send_notification_after_first_deposit_use_telegram_bot():
+    user_id = request.args.get('user_id', '', str)
+    amount = request.args.get('amount', 0, int)
+    currency = request.args.get('currency', '', str)
 
-    params = request.args
-    message = f'Получен GET запрос с параметрами: {params}'
-    bot.send_message(chat_id, message)
+    if user_id == '' or amount == 0 or currency == '':
+        return make_response('Bad Request', 400)
+
+    response_text = f'User id: {user_id}\n' \
+                    f'Amount: {amount} {currency}'
+
+    try:
+        send_notification_to_admins(response_text)
+    except telebot.apihelper.ApiException:
+        return make_response('Error: failed to send notification to admin', 400)
 
     return make_response('OK', 200)
 
@@ -45,23 +58,14 @@ def webhook():
     if flask.request.headers.get('content-type') != 'application/json':
         return make_response('Error: content-type is not json', 403)
 
-    json_string = flask.request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
+    try:
+        json_string = flask.request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+    except Exception:
+        return make_response('Error: failed to process update', 400)
 
     return make_response('OK', 200)
-
-
-@bot.message_handler(commands=['start'])
-def register_chat(message):
-    message_text = 'You are not an administrator'
-
-    if message.from_user.id == int(USER_ID):
-        global chat_id
-        chat_id = message.chat.id
-        message_text = 'The chat is registered'
-
-    bot.send_message(message.chat.id, message_text)
 
 
 if __name__ == '__main__':
