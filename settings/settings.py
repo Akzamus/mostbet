@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import threading
-import signal
 import json
 import os
 
@@ -14,22 +13,17 @@ MAIN_ADMIN_ID = int(os.getenv('MAIN_ADMIN_ID'))
 admin_ids_file = 'admin_ids.json'
 admin_ids = []
 
-try:
-    with open(admin_ids_file, 'r') as f:
-        admin_ids = json.load(f)
-except Exception:
-    with lock:
-        admin_ids.append(MAIN_ADMIN_ID)
-
 
 def save_admin_ids():
     with open(admin_ids_file, 'w') as file:
         json.dump(admin_ids, file)
 
 
-def handle_exit(signum, frame):
-    save_admin_ids()
-    exit(0)
+try:
+    with open(admin_ids_file, 'r') as f:
+        admin_ids = json.load(f)
+except Exception:
+    with lock:
+        admin_ids.append(MAIN_ADMIN_ID)
+        save_admin_ids()
 
-
-signal.signal(signal.SIGTERM, handle_exit)

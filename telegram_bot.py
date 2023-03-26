@@ -1,4 +1,4 @@
-from settings.settings import BOT_TOKEN, admin_ids, MAIN_ADMIN_ID, lock
+from settings.settings import BOT_TOKEN, admin_ids, MAIN_ADMIN_ID, lock, save_admin_ids
 import telebot
 
 bot = telebot.TeleBot(token=BOT_TOKEN)
@@ -45,7 +45,7 @@ def add_admin(message):
     user_id = message.from_user.id
     response_text = 'You are not an admin'
     if user_id in admin_ids:
-        words = message.text.split()
+        words = message.text.split(' ')
         if len(words) != 2:
             response_text = 'Incorrect input, correct input format:\n' \
                             '/add (user_id)'
@@ -57,6 +57,7 @@ def add_admin(message):
                     response_text = 'The user is already an admin'
                 else:
                     admin_ids.append(int(words[1]))
+                    save_admin_ids()
                     response_text = 'User added to admins'
         else:
             response_text = 'The user with this id does not exists or ' \
@@ -81,6 +82,7 @@ def delete_admin(message):
                     response_text = 'You cannot delete yourself from the list'
                 else:
                     admin_ids.remove(int(words[1]))
+                    save_admin_ids()
                     response_text = 'Admin removed from the list'
         else:
             response_text = 'The admin with this id was not found in the list'
