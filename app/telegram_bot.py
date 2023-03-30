@@ -102,6 +102,7 @@ class TelegramBot:
 
     def send_notification_to_admins(self, text: str) -> None:
         admin_ids: List[int] = self.__admin_service.get_admin_ids()
+        admin_ids.append(self.__admin_service.get_main_admin_id())
         for admin_id in admin_ids:
             self.__bot.send_message(admin_id, text)
 
