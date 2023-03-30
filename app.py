@@ -7,6 +7,11 @@ import flask
 app = Flask(__name__)
 
 
+# class TelegramWebhookHandler:
+#     def __init__(self, telegram_bot):
+#         self.app = Flask(__name__)
+#         self.bot = telegram_bot
+
 def check_user_existence(user_id):
     user_exists = True
     try:
