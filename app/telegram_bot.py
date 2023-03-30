@@ -1,9 +1,9 @@
-import telebot
-
 from app.admin_service import AdminService
 from telebot import TeleBot
 from telebot.types import Message, Update
 from typing import List
+
+import telebot
 
 
 class TelegramBot:
