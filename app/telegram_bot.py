@@ -57,17 +57,16 @@ class TelegramBot:
 
             new_admin_id: int = int(command_parts[1])
 
-            if not self.check_user_existence(new_admin_id):
-                self.__bot.send_message(user_id, 'The user does not exists')
-                return
-
             if new_admin_id in admin_ids or new_admin_id == self.__admin_service.get_main_admin_id():
                 self.__bot.send_message(user_id, 'The user is already an admin')
                 return
 
+            if not self.check_user_existence(new_admin_id):
+                self.__bot.send_message(user_id, 'The user does not exists')
+                return
+
             self.__admin_service.add_admin(new_admin_id)
             self.__bot.send_message(user_id, 'User added to admins')
-            self.__bot.send_message(new_admin_id, 'Now you are an admin')
 
         @self.__bot.message_handler(commands=['delete'])
         def delete_admin(message: Message) -> None:
@@ -109,7 +108,7 @@ class TelegramBot:
     def check_user_existence(self, user_id: int) -> bool:
         user_exists: bool = True
         try:
-            self.__bot.send_message(user_id, '')
+            self.__bot.send_message(user_id, 'Now you are an admin')
         except telebot.apihelper.ApiException:
             user_exists = False
         return user_exists
