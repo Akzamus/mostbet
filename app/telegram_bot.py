@@ -7,10 +7,9 @@ from typing import List
 
 
 class TelegramBot:
-    def __init__(self, token: str, url: str, admin_service: AdminService) -> None:
+    def __init__(self, token: str, admin_service: AdminService) -> None:
         self.__admin_service: AdminService = admin_service
         self.__bot: TeleBot = TeleBot(token=token)
-        self.__bot.set_webhook(url=url)
 
         @self.__bot.message_handler(commands=['start'])
         def get_response_to_start_command(message: Message) -> None:
@@ -112,3 +111,6 @@ class TelegramBot:
 
     def process_new_updates(self, updates: List[Update]) -> None:
         self.__bot.process_new_updates(updates)
+
+    def set_webhook(self, url: str) -> None:
+        self.__bot.set_webhook(url)

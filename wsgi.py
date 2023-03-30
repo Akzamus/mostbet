@@ -10,9 +10,10 @@ admin_service = AdminService(
 
 telegram_bot = TelegramBot(
     token=BOT_TOKEN,
-    url=WEB_HOOK_URL,
     admin_service=admin_service
 )
+
+telegram_bot.set_webhook(WEB_HOOK_URL)
 
 telegram_webhook_handler = TelegramWebhookHandler(
     telegram_bot=telegram_bot
