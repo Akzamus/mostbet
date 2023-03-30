@@ -1,6 +1,6 @@
 import telebot
 
-from admin_service import AdminService
+from app.admin_service import AdminService
 from telebot import TeleBot
 from telebot.types import Message, Update
 from typing import List

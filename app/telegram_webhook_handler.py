@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response, Response
 from telebot.apihelper import ApiException
-from telegram_bot import TelegramBot
+from app.telegram_bot import TelegramBot
 from telebot.types import Update
 import flask
 

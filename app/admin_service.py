@@ -6,6 +6,7 @@ class AdminService:
     def __init__(self, db_path: str, main_admin_id: int):
         self.__db_path: str = db_path
         self.__main_admin_id: int = main_admin_id
+        self.create_admins_table()
 
     def add_admin(self, admin_id: int) -> None:
         with sqlite3.connect(self.__db_path) as conn:
@@ -32,6 +33,11 @@ class AdminService:
             cursor.execute("SELECT id FROM admins")
             rows = cursor.fetchall()
             return [row[0] for row in rows]
+
+    def create_admins_table(self):
+        with sqlite3.connect(self.__db_path) as conn:
+            conn.execute('''CREATE TABLE IF NOT EXISTS admins
+                         (id INTEGER PRIMARY KEY)''')
 
     def get_main_admin_id(self) -> int:
         return self.__main_admin_id
