@@ -38,9 +38,10 @@ class TelegramBot:
         @self.__bot.message_handler(commands=['add'])
         def add_admin(message: Message) -> None:
             admin_ids: List[int] = self.__admin_service.get_admin_ids()
+            main_admin_id = self.__admin_service.get_main_admin_id()
             user_id: int = message.from_user.id
 
-            if not self.__admin_service.is_admin(user_id):
+            if not self.__admin_service.is_admin(user_id) and user_id != main_admin_id:
                 self.__bot.send_message(user_id, 'You are not an admin')
                 return
 
