@@ -64,4 +64,3 @@ def webhook():
         return make_response('Error: failed to process update', 400)
 
     return make_response('OK', 200)
-

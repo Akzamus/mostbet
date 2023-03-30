@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import threading
+import sqlite3
 import json
 import os
 
