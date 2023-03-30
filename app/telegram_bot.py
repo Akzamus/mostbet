@@ -12,7 +12,7 @@ class TelegramBot:
     def __init__(self, token: str, url: str, admin_service: AdminService) -> None:
         self.__admin_service: AdminService = admin_service
         self.__bot: TeleBot = TeleBot(token=token)
-        time.sleep(0.1)
+        time.sleep(1)
         self.__bot.set_webhook(url=url)
 
         @self.__bot.message_handler(commands=['start'])
